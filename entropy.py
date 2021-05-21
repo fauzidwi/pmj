@@ -4,26 +4,16 @@ import datetime
 import pandas as pd
 import math
 import sys
-import requests
-import json
 
 try:
     while True:
-        cetakWaktu = open("Waktu Per 5 Detik.txt", "a+")
-        # cetakWaktu = open("Waktu Per 15 Detik.txt", "a+")
-        # cetakWaktu = open("Waktu Per 30 Detik.txt", "a+")
-        # cetakWaktu = open("Waktu Per 50 Detik.txt", "a+")
-        # cetakWaktu = open("Waktu Per 70 Detik.txt", "a+")
+        cetakWaktu = open("Waktu Per 50 Detik.txt", "a+")
         waktu=time.time()
     
         timeAwal = (waktu)*1000
         waktuAwal = int(timeAwal)
 
-        # timeAkhir = (waktu-5)*1000
-        # timeAkhir = (waktu-15)*1000
-        # timeAkhir = (waktu-30)*1000
-        # timeAkhir = (waktu-50)*1000
-        timeAkhir = (waktu-70)*1000
+        timeAkhir = (waktu-50)*1000
         waktuAkhir = int(timeAkhir)
 
         waktu1 = time.time()
@@ -90,73 +80,13 @@ try:
                     protoblock = items
 
             print("protocol DDOS :"+protoblock+"; jumlah serangan :"+str(maks))
-
-            #get DPID from switches
-            mapping = {}
-            a = requests.get('http://192.168.3.10:8080/stats/switches')
-            # print(a.json())
-            switches = a.json()
-
-            #get port description
-            for i in switches:
-                # print(i)
-                command = 'http://192.168.3.10:8080/stats/portdesc/' + str(i)
-                r = requests.get(command)
-                temp = r.json()[str(i)]
-                ports = []
-                for b in temp:
-                    if b['port_no'] != 'LOCAL':
-                        ports.append(b['port_no'])
-                        # print("DPID:"+str(i)+";Port:"+str(b['port_no']))
-                mapping[i] = ports
-
-            print(mapping)
-
-            #mitigating - Flow Rule
-            for keys, values in mapping.items():
-                for a in values:
-                    send = requests.post('http://192.168.3.10:8080/stats/flowentry/add', json={\
-                    "dpid": keys,\
-                    "cookie": 0,\
-                    "table_id": 0,\
-                    "hard_timeout": 60,\
-                    "priority": 11111,\
-                    "flags": 1,\
-                    "match":{"in_port": a,"eth_type": 0x0800,"ip_proto": 1},\
-                    "actions":[]\
-                    })
-                    print(send.status_code)
-
-
-
-
-            # curl -X POST -d '{
-            #     "dpid": 1,
-            #     "cookie": 0,
-            #     "table_id": 0,
-            #     "priority": 100,
-            #     "flags": 1,
-            #     "match":{
-            #         "in_port": 1,
-            # 		"eth_type": 0x0800,
-            # 		"ip_proto": 1
-            #     },
-            #     "actions":[
-            #     ]
-            #  }' http://localhost:8080/stats/flowentry/add
-
-            
         else:
             cetakEntropy = open("entropyNormal.txt", "a+")
             waktuEntropy = datetime.datetime.now()
             cetakEntropy.write(str(waktuEntropy)+" : "+str(entropy)+"\n")
             cetakEntropy.close()
-
-        # time.sleep(5)
-        # time.sleep(15)
-        # time.sleep(30)
-        # time.sleep(50)
-        time.sleep(70) 
+            
+        time.sleep(50)
 
 except KeyboardInterrupt:
     sys.exit(0)
